@@ -1,0 +1,117 @@
+1:-  A retail e-commerce company called "ShopEasy" has an online platform where customers can buy products from various categories like electronics, clothing, home appliances etc.. 
+They have been tracking customer purchase behavior over several years through their relational database management system which uses SQL syntax.
+The database has two tables 'customer' table with customer id(cid),name,email,idate(YYYYMMDD),last_visit_date(YYYYMMDD);
+another 'order' table having order_id(oid),customer_id(cid),order_date(YYYYMMDD),product_category(pcat).
+Write an SQL Query which would help identify top3 product categories selling most items along with total revenue earned(including tax ) across each categoryAbruptly stopping date
+September30th2020.Also display sum gainedfrom non electronic items during lock down period(March15th2020toJune30th2020).
+
+You need write only SQL query no execution snippets please use proper indentation note you might require(!!)selfjoinsandaggregatefunctions/sql clauseforbettervisibility
+
+ANSWER:- 
+-- Top 3 Product Categories by Items Sold and Total Revenue (up to Sept 30, 2020)
+SELECT 
+    o.pcat AS product_category,
+    COUNT(o.oid) AS total_items_sold,
+    SUM(p.price_with_tax) AS total_revenue
+FROM 
+    "order" o
+JOIN 
+    product p ON o.oid = p.order_id
+WHERE 
+    o.order_date <= '20200930'
+GROUP BY 
+    o.pcat
+ORDER BY 
+    total_items_sold DESC
+LIMIT 3;
+
+
+-- Sum of Revenue from Non-Electronic Items During Lockdown Period
+SELECT 
+    SUM(p.price_with_tax) AS non_electronics_lockdown_revenue
+FROM 
+    "order" o
+JOIN 
+    product p ON o.oid = p.order_id
+WHERE 
+    o.order_date BETWEEN '20200315' AND '20200630'
+    AND o.pcat <> 'electronics';
+
+
+EXPLANATION:- 
+
+Query 1: Top 3 Product Categories (Up to 30-Sep-2020)
+sql
+Copy
+Edit
+SELECT 
+    o.pcat AS product_category,
+    COUNT(o.oid) AS total_items_sold,
+    SUM(p.price_with_tax) AS total_revenue
+Selects each product category
+
+Counts how many orders are placed (COUNT(oid))
+
+Calculates total revenue with tax (SUM(price_with_tax))
+
+sql
+Copy
+Edit
+FROM "order" o
+JOIN product p ON o.oid = p.order_id
+Joins order with assumed product table using order_id
+
+sql
+Copy
+Edit
+WHERE o.order_date <= '20200930'
+Restricts records up to September 30, 2020
+
+sql
+Copy
+Edit
+GROUP BY o.pcat
+ORDER BY total_items_sold DESC
+LIMIT 3;
+Groups by category
+
+Orders by count (items sold) in descending order
+
+Picks top 3 selling categories
+
+🔍 Query 2: Non-Electronics Revenue During Lockdown
+sql
+Copy
+Edit
+SELECT 
+    SUM(p.price_with_tax) AS non_electronics_lockdown_revenue
+Sums all revenue from non-electronic categories
+
+sql
+Copy
+Edit
+FROM "order" o
+JOIN product p ON o.oid = p.order_id
+WHERE 
+    o.order_date BETWEEN '20200315' AND '20200630'
+    AND o.pcat <> 'electronics';
+Filters dates during lockdown
+
+Excludes electronics category with <>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
